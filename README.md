@@ -3,7 +3,7 @@
 React components for item images in BOTW, for use with my BOTW projects
 such as the IST simulator.
 
-**NOTE: This repo does not contain any data files or assets from the game**
+**NOTE: This repo does not contain any data files or assets from the game. The MIT License only applies to files in this repo**
 
 ## Usage
 
