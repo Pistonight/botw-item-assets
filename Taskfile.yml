@@ -1,0 +1,84 @@
+version: '3'
+
+includes:
+  cargo:
+    taskfile: ../mono-dev/task/cargo.yaml
+    internal: true
+  ecma:
+    taskfile: ../mono-dev/task/ecma.yaml
+    internal: true
+
+tasks:
+  clean:
+    desc: Clean the build output
+    cmds:
+      - rm -rf src/generated
+
+  build:
+    desc: Build the generated data and sprites
+    cmds:
+      - task: build-src
+      - task: build-sprites
+
+  build-src:
+    cmds:
+      - $(which mkdir) -p src/generated
+      - python scripts/generate.py
+      - task: ecma:prettier-fix
+
+  build-sprites:
+    cmds:
+      - cargo run --release # It's insanely slow without --release
+      - task: ecma:prettier-fix
+
+  push:
+    desc: Push the generated assets. Requires gcloud access
+    cmds:
+      - gcloud storage cp src/generated/sprites/*.webp gs://ist-private/sprites
+
+  check:
+    cmds:
+      - task: cargo:clippy-all
+      - task: cargo:fmt-check
+      - task: ecma:tsc-check-build
+      - task: ecma:eslint-check
+      - task: ecma:prettier-check
+
+  fix:
+    cmds:
+      - task: cargo:fmt-fix
+      - task: ecma:eslint-fix
+      - task: ecma:prettier-fix
+
+  dev:
+    desc: Run test page dev server
+    cmds:
+      - task: ecma:vite-dev
+
+  test:
+    cmds:
+      - task: ecma:vite-build
+
+  pull-deps: 
+    cmds:
+      - rm -rf icons
+      - gcloud storage cp -r gs://ist-private/icons .
+
+  push-artifacts:
+    cmds:
+      - gcloud storage cp src/generated/*.ts gs://ist-private/artifacts/botw-item-assets
+      - gcloud storage cp src/generated/sprites/*.webp gs://ist-private/artifacts/botw-item-assets
+
+  pull-artifacts:
+    cmds:
+      - $(which mkdir) -p src/generated/sprites
+      - $(which mkdir) -p src/generated/special
+      - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.ts src/generated
+      - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.webp src/generated/sprites
+      - gcloud storage cp gs://ist-private/icons/SP/Item/* src/generated/special
+
+  git-push:
+    cmds:
+      - git remote set-url origin git@github.com:Pistonight/botw-item-assets
+      - git push
+
