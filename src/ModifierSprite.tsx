@@ -1,10 +1,7 @@
-import { makeStaticStyles, makeStyles, mergeClasses } from "@griffel/react";
+import { makeStyles, mergeClasses } from "@griffel/react";
 import { memo } from "react";
 
-import {
-    ModifierChunkClasses,
-    ModifierMetadata,
-} from "./generated/ModifierMetadata.ts";
+import { ModifierMetadata } from "./generated/ModifierMetadata.ts";
 
 export type ModifierSpriteProps = {
     /** Name of the special status to show */
@@ -13,8 +10,6 @@ export type ModifierSpriteProps = {
     /** Optional size of the sprite, default is 20 */
     size?: number;
 };
-
-const useChunkClasses = makeStaticStyles(ModifierChunkClasses);
 
 const useStyles = makeStyles({
     sprite: {
@@ -25,7 +20,6 @@ const useStyles = makeStyles({
 
 const SpriteImpl: React.FC<ModifierSpriteProps> = ({ size, status }) => {
     size = size || 20;
-    useChunkClasses();
     const styles = useStyles();
     if (!ModifierMetadata[status]) {
         return null;
@@ -36,7 +30,7 @@ const SpriteImpl: React.FC<ModifierSpriteProps> = ({ size, status }) => {
     return (
         <div
             aria-hidden
-            className={mergeClasses("sprite-modifiers", styles.sprite)}
+            className={mergeClasses("bia--sprite-modifiers", styles.sprite)}
             style={{
                 backgroundPosition,
                 width: size,

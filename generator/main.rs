@@ -3,7 +3,7 @@ use std::process::ExitCode;
 
 use anyhow::{anyhow, bail};
 use canvas::Canvas;
-use codize::{cblock, cconcat, clist};
+use codize::cconcat;
 
 mod error;
 use error::Error;
@@ -28,18 +28,30 @@ fn generate() -> anyhow::Result<()> {
         bail!("icons directory does not exist: {}", icons_dir.display());
     }
 
-    let generated_dir = home.join("src").join("generated").join("sprites");
-    if !generated_dir.exists() {
-        std::fs::create_dir_all(&generated_dir)?;
-    }
+    let src_generated_dir = ensure_dir(&home, "src/generated")?;
+    let sprites_generated_dir = ensure_dir(&home, "public/sprites")?;
+
+    generate_actors(&icons_dir, &sprites_generated_dir, &src_generated_dir)?;
+    generate_modifiers(&icons_dir, &sprites_generated_dir, &src_generated_dir)?;
+
+    println!("done!");
+
+    Ok(())
+}
+
+fn generate_actors(
+    icons_dir: &Path,
+    sprites_generated_dir: &Path,
+    src_generated_dir: &Path,
+) -> anyhow::Result<()> {
     println!("configuring actor chunks...");
 
     let mut chunks = vec![
         // chunk 0
-        find_images(&icons_dir, &["CapturedActor", "Item", "PlayerItem"])?,
+        find_images(icons_dir, &["CapturedActor", "Item", "PlayerItem"])?,
         // chunk 1
         find_images(
-            &icons_dir,
+            icons_dir,
             &[
                 "Bullet",
                 "WeaponBow",
@@ -51,7 +63,7 @@ fn generate() -> anyhow::Result<()> {
         )?,
         // chunk 2
         find_images(
-            &icons_dir,
+            icons_dir,
             &[
                 "ArmorHead",
                 "ArmorLower",
@@ -83,9 +95,9 @@ fn generate() -> anyhow::Result<()> {
     let mut sprite_sheets = (0..chunks.len())
         .map(|i| {
             let mut sprite_sheet = SpriteSheet::new(i as u16);
-            let lo_res_path = generated_dir.join(format!("chunk{}x32.webp", i));
+            let lo_res_path = sprites_generated_dir.join(format!("chunk{}x32.webp", i));
             let lo_res = Canvas::new(lo_res_path, 16, 32, 28, 75f32);
-            let hi_res_path = generated_dir.join(format!("chunk{}x64.webp", i));
+            let hi_res_path = sprites_generated_dir.join(format!("chunk{}x64.webp", i));
             let hi_res = Canvas::new(hi_res_path, 16, 64, 56, 90f32);
             sprite_sheet.add_canvas(lo_res);
             sprite_sheet.add_canvas(hi_res);
@@ -119,30 +131,6 @@ fn generate() -> anyhow::Result<()> {
         .join("|");
     let metadata = serde_json::to_string(&metadata)?;
     let metadata_ts = cconcat![
-        // imports
-        cconcat!((0..sprite_sheets.len())
-            .map(|i| { format!("import chunk{i}x32 from \"./sprites/chunk{i}x32.webp?url\";") })),
-        cconcat!((0..sprite_sheets.len())
-            .map(|i| { format!("import chunk{i}x64 from \"./sprites/chunk{i}x64.webp?url\";") })),
-        // chunkmap classnames
-        cblock! {
-            "export const ActorChunkClasses = {",
-            [
-                clist!("" => (0..sprite_sheets.len()).map(|i| {
-                    format!("\".sprite-chunk{i}x32\": {{ backgroundImage: `url(${{chunk{i}x32}})` }},")
-                })),
-                clist!("" => (0..sprite_sheets.len()).map(|i| {
-                    format!("\".sprite-chunk{i}x64\": {{ backgroundImage: `url(${{chunk{i}x64}})` }},")
-                })),
-                clist!("" => (0..sprite_sheets.len()).map(|i| {
-                    format!("\".sprite-mask-chunk{i}x32\": {{ maskImage: `url(${{chunk{i}x32}})` }},")
-                })),
-                clist!("" => (0..sprite_sheets.len()).map(|i| {
-                    format!("\".sprite-mask-chunk{i}x64\": {{ maskImage: `url(${{chunk{i}x64}})` }},")
-                })),
-            ],
-            "} as const;"
-        },
         // metadata for finding where an actor is
         "/** Actor => [Chunk, Position]*/",
         format!(
@@ -155,17 +143,23 @@ fn generate() -> anyhow::Result<()> {
         ),
     ];
 
-    let metadata_dir = generated_dir.parent().unwrap();
-
     std::fs::write(
-        metadata_dir.join("ActorMetadata.ts"),
+        src_generated_dir.join("ActorMetadata.ts"),
         metadata_ts.to_string(),
     )?;
 
+    Ok(())
+}
+
+fn generate_modifiers(
+    icons_dir: &Path,
+    sprites_generated_dir: &Path,
+    src_generated_dir: &Path,
+) -> anyhow::Result<()> {
     println!("configuring modifier chunks...");
-    let modifier_chunk = find_images(&icons_dir, &["SpecialStatus"])?;
+    let modifier_chunk = find_images(icons_dir, &["SpecialStatus"])?;
     let mut modifier_sheet = SpriteSheet::new(0);
-    let modifier_path = generated_dir.join("modifiers.webp");
+    let modifier_path = sprites_generated_dir.join("modifiers.webp");
     let modifier_canvas = Canvas::new(modifier_path, 8, 48, 48, 90f32);
     modifier_sheet.add_canvas(modifier_canvas);
 
@@ -184,16 +178,6 @@ fn generate() -> anyhow::Result<()> {
     modifier_sheet.add_metadata(&mut metadata)?;
     let metadata = serde_json::to_string(&metadata)?;
     let metadata_ts = cconcat![
-        // imports
-        "import modifiers from \"./sprites/modifiers.webp?url\";",
-        // chunkmap classnames
-        cblock! {
-            "export const ModifierChunkClasses = {",
-            [
-                "\".sprite-modifiers\": { backgroundImage: `url(${modifiers})` },",
-            ],
-            "} as const;"
-        },
         "/** Modifier => [Chunk, Position]*/",
         "export type ModifierMetadata = Record<string,[0,number]>;",
         format!(
@@ -203,12 +187,9 @@ fn generate() -> anyhow::Result<()> {
     ];
 
     std::fs::write(
-        metadata_dir.join("ModifierMetadata.ts"),
+        src_generated_dir.join("ModifierMetadata.ts"),
         metadata_ts.to_string(),
     )?;
-
-    println!("done!");
-
     Ok(())
 }
 
@@ -264,5 +245,13 @@ fn find_root() -> anyhow::Result<PathBuf> {
         }
     };
     path.pop();
+    Ok(path)
+}
+
+fn ensure_dir(home: &Path, path: &str) -> anyhow::Result<PathBuf> {
+    let path = home.join(path);
+    if !path.exists() {
+        std::fs::create_dir_all(&path)?;
+    }
     Ok(path)
 }

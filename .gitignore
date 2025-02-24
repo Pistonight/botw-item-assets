@@ -4,6 +4,7 @@
 /icons
 /target
 /dist
+/public
 *.webp
 *.png
 pnpm-lock.yaml

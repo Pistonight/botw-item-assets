@@ -1,8 +1,9 @@
 import { memo } from "react";
-import { makeStaticStyles, makeStyles, mergeClasses } from "@griffel/react";
+import { makeStyles, mergeClasses } from "@griffel/react";
 
-import { ActorChunkClasses, ActorMetadata } from "./generated/ActorMetadata.ts";
+import { ActorMetadata } from "./generated/ActorMetadata.ts";
 import { ActorRemap } from "./generated/ActorRemap.ts";
+import { getSpecialIconUrl } from "./asset.ts";
 
 export type ActorSpriteProps = {
     /** Name of the Actor to display */
@@ -58,8 +59,6 @@ export type ActorSpriteProps = {
     powered?: boolean;
 };
 
-const useChunkClasses = makeStaticStyles(ActorChunkClasses);
-
 const useStyles = makeStyles({
     sprite: {
         backgroundRepeat: "no-repeat",
@@ -114,7 +113,6 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
     blank,
     badlyDamaged,
 }) => {
-    useChunkClasses();
     const styles = useStyles();
 
     size = size || 64;
@@ -161,12 +159,7 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
                         style={{
                             top: topOffset,
                         }}
-                        src={
-                            new URL(
-                                `./generated/special/${iconActor}.${ext}`,
-                                import.meta.url,
-                            ).href
-                        }
+                        src={getSpecialIconUrl(`${iconActor}.${ext}`)}
                         width={size}
                     />
                 </div>
@@ -187,7 +180,22 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
     // don't show badly damaged effect for images that would be animated (but disabled)
     badlyDamaged = badlyDamaged && !isSimpleAnimated && !isAbility;
 
-    const [chunk, position] = ActorMetadata[iconActor];
+    const meta = ActorMetadata[iconActor];
+    if (!meta) {
+        return (
+            <div
+                aria-hidden
+                className={mergeClasses(baseClass)}
+                style={{
+                    width: size,
+                    height: size,
+                }}
+            >
+                {iconActor}
+            </div>
+        );
+    }
+    const [chunk, position] = meta;
     const backgroundPosition = getBackgroundPosition(position, size);
     const spriteSize = cheap ? 32 : 64;
 
@@ -199,7 +207,7 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
         <div
             aria-hidden
             className={mergeClasses(
-                `sprite-${chunkClass}`,
+                `bia--sprite-${chunkClass}`,
                 baseClass,
                 badlyDamaged && styles.damageContainer,
             )}
@@ -213,7 +221,7 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
             {badlyDamaged && (
                 <div
                     className={mergeClasses(
-                        `sprite-mask-${chunkClass}`,
+                        `bia--sprite-mask-${chunkClass}`,
                         !disableAnimation && styles.damageAnimation,
                     )}
                     style={{
@@ -304,7 +312,7 @@ const getSpecialActorStyle = (actor: string, size: number) => {
     return {
         width: size,
         height: size,
-        backgroundImage: `url(${new URL(`./generated/special/${actor}.webp`, import.meta.url).href})`,
+        backgroundImage: `url("${getSpecialIconUrl(actor + ".webp")}")`,
         backgroundSize: size,
     };
 };

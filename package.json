@@ -3,10 +3,21 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
+    "description": "",
+    "homepage": "https://github.com/Pistonight/botw-item-assets",
+    "bugs": {
+        "url": "https://github.com/Pistonight/botw-item-assets/issues"
+    },
+    "author": "Pistonight <pistonknight@outlook.com>",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Pistonight/botw-item-assets.git"
+    },
     "exports": {
         ".": "./src/index.ts"
     },
     "dependencies": {
+        "@pistonite/pure": "catalog:",
         "@griffel/react": "catalog:",
         "react": "catalog:"
     },

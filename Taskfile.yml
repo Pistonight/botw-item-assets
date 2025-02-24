@@ -13,6 +13,7 @@ tasks:
     desc: Clean the build output
     cmds:
       - rm -rf src/generated
+      - rm -rf public/sprites
 
   build:
     desc: Build the generated data and sprites
@@ -24,17 +25,10 @@ tasks:
     cmds:
       - $(which mkdir) -p src/generated
       - python scripts/generate.py
-      - task: ecma:prettier-fix
 
   build-sprites:
     cmds:
-      - cargo run --release # It's insanely slow without --release
-      - task: ecma:prettier-fix
-
-  push:
-    desc: Push the generated assets. Requires gcloud access
-    cmds:
-      - gcloud storage cp src/generated/sprites/*.webp gs://ist-private/sprites
+      - cargo run --bin item-sprites-generator --release # It's insanely slow without --release
 
   check:
     cmds:
@@ -59,13 +53,6 @@ tasks:
     cmds:
       - task: ecma:vite-build
 
-  put-mocks:
-    cmds:
-      - $(which mkdir) -p src/generated
-      - cp src/mock/ActorMetadata_mock.ts src/generated/ActorMetadata.ts
-      - cp src/mock/ActorRemap_mock.ts src/generated/ActorRemap.ts
-      - cp src/mock/ModifierMetadata_mock.ts src/generated/ModifierMetadata.ts
-
   pull-deps: 
     cmds:
       - rm -rf icons
@@ -74,15 +61,16 @@ tasks:
   push-artifacts:
     cmds:
       - gcloud storage cp src/generated/*.ts gs://ist-private/artifacts/botw-item-assets
-      - gcloud storage cp src/generated/sprites/*.webp gs://ist-private/artifacts/botw-item-assets
+      - gcloud storage cp public/sprites/*.webp gs://ist-private/artifacts/botw-item-assets
 
   pull-artifacts:
     cmds:
-      - $(which mkdir) -p src/generated/sprites
-      - $(which mkdir) -p src/generated/special
+      - $(which mkdir) -p src/generated
+      - $(which mkdir) -p public/sprites
+      - $(which mkdir) -p public/special
       - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.ts src/generated
-      - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.webp src/generated/sprites
-      - gcloud storage cp gs://ist-private/icons/SP/Item/* src/generated/special
+      - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.webp public/sprites
+      - gcloud storage cp gs://ist-private/icons/SP/Item/* public/special
 
   git-push:
     cmds:
