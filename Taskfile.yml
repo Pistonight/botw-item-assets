@@ -59,6 +59,13 @@ tasks:
     cmds:
       - task: ecma:vite-build
 
+  put-mocks:
+    cmds:
+      - $(which mkdir) -p src/generated
+      - cp src/mock/ActorMetadata_mock.ts src/generated/ActorMetadata.ts
+      - cp src/mock/ActorRemap_mock.ts src/generated/ActorRemap.ts
+      - cp src/mock/ModifierMetadata_mock.ts src/generated/ModifierMetadata.ts
+
   pull-deps: 
     cmds:
       - rm -rf icons
