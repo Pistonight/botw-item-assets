@@ -72,6 +72,20 @@ tasks:
       - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.webp public/sprites
       - gcloud storage cp gs://ist-private/icons/SP/Item/* public/special
 
+  pull-artifacts-public:
+    cmds:
+      - $(which mkdir) -p src/generated
+      - wget -O src/generated/ActorMetadata.ts https://ist.pistonite.dev/botw-ist/packages/item-assets/ActorMetadata.ts 
+      - wget -O src/generated/ModifierMetadata.ts https://ist.pistonite.dev/botw-ist/packages/item-assets/ModifierMetadata.ts > 
+
+  package-artifacts-public:
+    vars:
+      DIR: ../manual/book/botw-ist/packages/item-assets/
+    cmds:
+      - $(which mkdir) -p {{.DIR}}
+      - cp src/generated/ActorMetadata.ts {{.DIR}}
+      - cp src/generated/ModifierMetadata.ts {{.DIR}}
+
   git-push:
     cmds:
       - git remote set-url origin git@github.com:Pistonight/botw-item-assets
