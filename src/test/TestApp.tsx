@@ -1,5 +1,5 @@
-import { PropsWithChildren } from "react";
-import { ActorSprite, ModifierSprite } from "../src";
+import type { PropsWithChildren } from "react";
+import { ActorSprite, ModifierSprite } from "..";
 
 export const App: React.FC = () => {
     const actors = [

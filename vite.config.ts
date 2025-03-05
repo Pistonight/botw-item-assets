@@ -1,9 +1,12 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import monodev from "mono-dev/vite";
 
-export default defineConfig({
-    plugins: [react()],
-    server: {
-        port: 33174,
-    },
-});
+const monodevConfig = monodev({});
+
+export default defineConfig(
+    monodevConfig({
+        server: {
+            port: 33174,
+        },
+    }),
+);

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import { App } from "./TestApp.tsx";
 
-import { registerAssetLocation } from "../src/asset.ts";
+import { registerAssetLocation } from "../asset.ts";
 
 registerAssetLocation("/");
 
