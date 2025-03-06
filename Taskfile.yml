@@ -61,12 +61,16 @@ tasks:
 
   pull-artifacts:
     cmds:
-      - $(which mkdir) -p src/generated
       - $(which mkdir) -p public/sprites
       - $(which mkdir) -p public/special
-      - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.ts src/generated
       - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.webp public/sprites
       - gcloud storage cp gs://ist-private/icons/SP/Item/* public/special
+      - task: pull-artifacts-ts
+
+  pull-artifacts-ts:
+    cmds:
+      - $(which mkdir) -p src/generated
+      - gcloud storage cp gs://ist-private/artifacts/botw-item-assets/*.ts src/generated
 
   pull-artifacts-public:
     cmds:
