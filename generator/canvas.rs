@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use anyhow::{anyhow, bail};
-use image::imageops::{self, FilterType};
 use image::DynamicImage;
+use image::imageops::{self, FilterType};
 use webp::Encoder;
 
 use crate::error::Error;

@@ -145,7 +145,7 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
     // Special handling for Champion Abilities:
     // - Active ones are larger and needs to be offseted
     // - Deactive ones has animation
-    const isAbility = isChampionAbility(actor);
+    const isAbility = isChampionAbilityIcon(actor);
     if (isAbility) {
         const dlc = iconActor.includes("DLC");
         // active - either animated or not, with offset
@@ -274,7 +274,7 @@ const mapActor = (
     }
 
     // Champion Abilities
-    if (isChampionAbility(actor)) {
+    if (isChampionAbilityIcon(actor)) {
         // need to return here because animated images are not
         // in Dummy
         if (deactive) {
@@ -302,9 +302,9 @@ const getBackgroundPosition = (position: number, size: number) => {
     return `-${x * size}px -${y * size}px`;
 };
 
-const isChampionAbility = (actor: string) => {
+const isChampionAbilityIcon = (iconActor: string) => {
     return /^Obj_(DLC_)?HeroSoul_(Gerudo|Goron|Rito|Zora)(_Disabled)?$/.test(
-        actor,
+        iconActor,
     );
 };
 

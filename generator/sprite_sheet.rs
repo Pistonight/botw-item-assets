@@ -1,12 +1,12 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use image::GenericImageView;
 use serde::{Deserialize, Serialize};
 
-use crate::canvas::Canvas;
 use crate::Error;
+use crate::canvas::Canvas;
 
 #[derive(Debug, Clone)]
 pub struct SpriteSheet {

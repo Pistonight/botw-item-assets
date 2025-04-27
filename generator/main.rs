@@ -241,7 +241,9 @@ fn find_root() -> anyhow::Result<PathBuf> {
             // found the package
         }
         _ => {
-            bail!("could not verify the root directory is correct. make sure you are running the generator with cargo");
+            bail!(
+                "could not verify the root directory is correct. make sure you are running the generator with cargo"
+            );
         }
     };
     path.pop();

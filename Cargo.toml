@@ -2,17 +2,17 @@
 name = "item-sprites-generator"
 version = "0.0.0"
 publish = false
-edition = "2021"
+edition = "2024"
 
 [workspace]
 
 [dependencies]
-anyhow = "1.0.94"
+anyhow = "1.0.98"
 codize = "0.3.3"
-image = "0.25.5"
-serde = { version = "1.0.216", features = ["derive"] }
-serde_json = "1.0.134"
-thiserror = "2.0.9"
+image = "0.25.6"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+thiserror = "2.0.12"
 webp = "0.3.0"
 
 
