@@ -14,12 +14,12 @@ pub enum Error {
 
 impl<T> From<PoisonError<T>> for Error {
     fn from(e: PoisonError<T>) -> Self {
-        Error::Poison(format!("{}", e))
+        Error::Poison(e.to_string())
     }
 }
 
 impl From<WebPEncodingError> for Error {
     fn from(e: WebPEncodingError) -> Self {
-        Error::WebpEncode(format!("{:?}", e))
+        Error::WebpEncode(format!("{e:?}"))
     }
 }

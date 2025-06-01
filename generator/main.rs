@@ -15,7 +15,7 @@ mod canvas;
 
 fn main() -> ExitCode {
     if let Err(e) = generate() {
-        eprintln!("error: {:?}", e);
+        eprintln!("error: {e:?}");
         return ExitCode::FAILURE;
     }
     ExitCode::SUCCESS
@@ -95,9 +95,9 @@ fn generate_actors(
     let mut sprite_sheets = (0..chunks.len())
         .map(|i| {
             let mut sprite_sheet = SpriteSheet::new(i as u16);
-            let lo_res_path = sprites_generated_dir.join(format!("chunk{}x32.webp", i));
+            let lo_res_path = sprites_generated_dir.join(format!("chunk{i}x32.webp"));
             let lo_res = Canvas::new(lo_res_path, 16, 32, 28, 75f32);
-            let hi_res_path = sprites_generated_dir.join(format!("chunk{}x64.webp", i));
+            let hi_res_path = sprites_generated_dir.join(format!("chunk{i}x64.webp"));
             let hi_res = Canvas::new(hi_res_path, 16, 64, 56, 90f32);
             sprite_sheet.add_canvas(lo_res);
             sprite_sheet.add_canvas(hi_res);
@@ -114,7 +114,7 @@ fn generate_actors(
 
     println!("encoding actor sprite sheets...");
     for (i, sheet) in sprite_sheets.iter().enumerate() {
-        println!("-- chunk {}", i);
+        println!("-- chunk {i}");
         let sizes = sheet.write()?;
         println!("     low resolution: {} bytes", sizes[0]);
         println!("     high resolution: {} bytes", sizes[1]);

@@ -9,6 +9,10 @@ includes:
     internal: true
 
 tasks:
+  install:
+    cmds:
+      - task: ecma:mono-config
+
   clean:
     desc: Clean the build output
     cmds:
