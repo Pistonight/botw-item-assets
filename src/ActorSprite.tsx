@@ -124,17 +124,9 @@ const SpriteImpl: React.FC<ActorSpriteProps> = ({
     // Handle simple animated images - Travel Medallion, 5 orbs
     // if not animated, it's in the sprite sheet
     const isSimpleAnimated =
-        /Obj_(WarpDLC|DungeonClearSeal|HeroSeal_(Gerudo|Goron|Rito|Zora))/.test(
-            actor,
-        );
+        /Obj_(WarpDLC|DungeonClearSeal|HeroSeal_(Gerudo|Goron|Rito|Zora))/.test(actor);
     if (!disableAnimation && isSimpleAnimated) {
-        return (
-            <div
-                aria-hidden
-                className={baseClass}
-                style={getSpecialActorStyle(actor, size)}
-            />
-        );
+        return <div aria-hidden className={baseClass} style={getSpecialActorStyle(actor, size)} />;
     }
 
     const iconActor = mapActor(actor, !!deactive, !!powered, effect);
@@ -303,9 +295,7 @@ const getBackgroundPosition = (position: number, size: number) => {
 };
 
 const isChampionAbilityIcon = (iconActor: string) => {
-    return /^Obj_(DLC_)?HeroSoul_(Gerudo|Goron|Rito|Zora)(_Disabled)?$/.test(
-        iconActor,
-    );
+    return /^Obj_(DLC_)?HeroSoul_(Gerudo|Goron|Rito|Zora)(_Disabled)?$/.test(iconActor);
 };
 
 const getSpecialActorStyle = (actor: string, size: number) => {

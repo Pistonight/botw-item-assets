@@ -11,13 +11,7 @@ export const App: React.FC = () => {
         "Obj_WarpDLC",
     ];
     const sizes = [16, 32, 48, 64, 96];
-    const modifiers = [
-        "AddGuard",
-        "AddLife",
-        "RapidFire",
-        "DNE",
-        "ClimbSpeedUp",
-    ];
+    const modifiers = ["AddGuard", "AddLife", "RapidFire", "DNE", "ClimbSpeedUp"];
     const modifierSizes = [10, 20, 32, 40, 64];
 
     return (
@@ -28,9 +22,7 @@ export const App: React.FC = () => {
             }}
         >
             {actors.map((actor) =>
-                sizes.map((size) => (
-                    <ActorMatrix key={actor + size} actor={actor} size={size} />
-                )),
+                sizes.map((size) => <ActorMatrix key={actor + size} actor={actor} size={size} />),
             )}
             {modifiers.map((modifier) =>
                 modifierSizes.map((size) => (
@@ -75,12 +67,7 @@ const ActorMatrix: React.FC<ActorMatrixProps> = ({ actor, size }) => {
                     <ActorSprite actor={actor} size={size} cheap badlyDamaged />
                 </Container>
                 <Container size={size}>
-                    <ActorSprite
-                        actor={actor}
-                        size={size}
-                        disableAnimation
-                        badlyDamaged
-                    />
+                    <ActorSprite actor={actor} size={size} disableAnimation badlyDamaged />
                 </Container>
                 <Container size={size}>
                     <ActorSprite actor={actor} size={size} powered />
@@ -89,38 +76,16 @@ const ActorMatrix: React.FC<ActorMatrixProps> = ({ actor, size }) => {
                     <ActorSprite actor={actor} size={size} cheap powered />
                 </Container>
                 <Container size={size}>
-                    <ActorSprite
-                        actor={actor}
-                        size={size}
-                        disableAnimation
-                        powered
-                    />
+                    <ActorSprite actor={actor} size={size} disableAnimation powered />
                 </Container>
                 <Container size={size}>
-                    <ActorSprite
-                        actor={actor}
-                        size={size}
-                        badlyDamaged
-                        powered
-                    />
+                    <ActorSprite actor={actor} size={size} badlyDamaged powered />
                 </Container>
                 <Container size={size}>
-                    <ActorSprite
-                        actor={actor}
-                        size={size}
-                        cheap
-                        badlyDamaged
-                        powered
-                    />
+                    <ActorSprite actor={actor} size={size} cheap badlyDamaged powered />
                 </Container>
                 <Container size={size}>
-                    <ActorSprite
-                        actor={actor}
-                        size={size}
-                        disableAnimation
-                        badlyDamaged
-                        powered
-                    />
+                    <ActorSprite actor={actor} size={size} disableAnimation badlyDamaged powered />
                 </Container>
                 <Container size={size}>
                     <ActorSprite actor={actor} size={size} deactive />
@@ -139,10 +104,7 @@ const ActorMatrix: React.FC<ActorMatrixProps> = ({ actor, size }) => {
     );
 };
 
-const Container: React.FC<PropsWithChildren<{ size: number }>> = ({
-    size,
-    children,
-}) => {
+const Container: React.FC<PropsWithChildren<{ size: number }>> = ({ size, children }) => {
     return (
         <div
             style={{
